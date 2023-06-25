@@ -1,0 +1,20 @@
+import pandas as pd
+import pyfpgrowth
+
+# Step 1: Read and Prepare the Data
+data = pd.read_csv('data.csv')  # Specify the name and path of your data file
+transactions = data.groupby('BasketID')['Product'].apply(list).values.tolist()
+
+# Step 2: Frequent Pattern Mining (FP-Growth)
+patterns = pyfpgrowth.find_frequent_patterns(transactions, 2)
+
+# Step 3: Generate Association Rules
+rules = pyfpgrowth.generate_association_rules(patterns, 0.5)
+
+# Step 4: Display the Association Rules
+print("Association Rules:")
+for rule, support in rules.items():
+    antecedent = ", ".join(rule)
+    consequent = ", ".join(rules[rule])
+    confidence = support / patterns[tuple(rule)]
+    print(f"{antecedent} -> {consequent} (Support: {support}, Confidence: {confidence})")
